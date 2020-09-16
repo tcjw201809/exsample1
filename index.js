@@ -3,6 +3,10 @@ const express = require('express');
 const app = express();
 
 const portNo = 3000;
+
+// webフォルダの中身を公開する
+app.use(express.static('web'));
+
 // Routing
 
 // localhost:3000/api/v1/listにGETをかけた場合のレスポンス
