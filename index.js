@@ -12,7 +12,9 @@ app.use(express.static('web'));
 
 // TODOリストデータ
 const todoList = [];
-// Routing
+
+
+// ====== Routing =====
 
 // localhost:3000/api/v1/listにGETをかけた場合のレスポンス
 app.get('/api/v1/list', (req, res) => {
@@ -53,5 +55,19 @@ app.post('/api/v1/add', (req, res) => {
     // 追加した項目をクライアントに返す
     res.json(todoItem);
 })
+
+// localhost:3000/api/v1/item/:idにDELETE送信した場合の対応
+app.delete('/api/v1/item/:id', (req, res) => {
+    // URLの:idと同じIDを持つ項目を検索
+    const index = todoList.findIndex((item) => item.id === req.params.id);
+
+    if (index >= 0) {
+        const deleted = todoList.splice(index, 1); // indexのいちにある項目を削除
+        console.log('Delete: ' + JSON.stringify(deleted[0]));
+    }
+
+    res.sendStatus(200); // OKステータスを返す
+});
+
 // 指定したポート番号でサーバー実行
 app.listen(portNo, () => {console.log(`Listening on port ${portNo}`)})
