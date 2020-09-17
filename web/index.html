@@ -20,6 +20,18 @@
         </div>
 
         <script>
+            // チェックボックスの値が変わった時に呼ばれる関数
+            function checkboxListener(event) {
+                const checkbox = event.currentTarget;
+                const id = checkbox.dataset.id;
+
+                const body = new FormData();
+                body.append('done', checkbox.checked.toString());
+
+                fetch(`./api/v1/item/${id}`, { method: 'PUT', body})
+                    .then(() => fetchTodoList());
+            }
+
             // Deleteボタンを押した時に呼ばれる関数
             function deleteButtonListener(event) {
                 const button = event.currentTarget;
@@ -39,6 +51,9 @@
                  // コンテナの中身を消す
                  const deleteButtonList = todoContainer.querySelectorAll('.delete-button');
                  deleteButtonList.forEach((button) => button.removeEventListener('click', deleteButtonListener));
+                 const checkboxList = todoContainer.querySelectorAll('.checkbox');
+                 checkboxList.forEach((checkbox) => checkbox.removeEventListener('change', checkboxListener));
+                
                  todoContainer.innerHTML= '';
 
                  // JSONの各要素について処理
@@ -46,8 +61,12 @@
                     const li = document.createElement('li');            // リスト要素
                     const label = document.createElement('label');      // ラベル
                     const checkbox = document.createElement('input');   // チェックボックス
+                    checkbox.classList.add('checkbox');
                     checkbox.type = 'checkbox';
                     checkbox.checked = item.done;                       // 項目がdoneならチェック
+                    checkbox.dataset.id = item.id;
+                    checkbox.addEventListener('change',checkboxListener);
+
                     const text = new Text(item.title);                  // 項目名
 
                     const deleteButton = document.createElement('button');// 削除ボタン
@@ -103,10 +122,10 @@
                     // 項目をPOSTした後にリストを更新する
                     postNewTodoItem({title}).then((item) => fetchTodoList());
                 }
-
-                // 初回データ読み込み
-                fetchTodoList();
             });
+            
+            // 初回データ読み込み
+            fetchTodoList();
 
         </script>
     </body>

@@ -6,27 +6,16 @@ const app = express();
 const portNo = 3000;
 
 app.use(multer().none()); // ファイルは扱わない
-
-// webフォルダの中身を公開する
-app.use(express.static('web'));
+app.use(express.static('web'));// webフォルダの中身を公開する
 
 // TODOリストデータ
 const todoList = [];
-
 
 // ====== Routing =====
 
 // localhost:3000/api/v1/listにGETをかけた場合のレスポンス
 app.get('/api/v1/list', (req, res) => {
-    // 送信データ
-    /*
-    const todoList = [
-        {title: 'todo1', done: true},
-        {title: 'todo2', done: false},
-        {title: 'todo3', done: false},
-    ];
-    */
-    // データ送信
+    // JSONデータ送信
     res.json(todoList);
 })
 
@@ -67,6 +56,24 @@ app.delete('/api/v1/item/:id', (req, res) => {
     }
 
     res.sendStatus(200); // OKステータスを返す
+});
+
+// checkboxを連動させる
+app.put('/api/v1/item/:id',(req, res) => {
+    // URLで指定されたidで項目を検索
+    const index = todoList.findIndex((item) => item.id === req.params.id);
+
+    // 項目が見つかればcheckboxのdoneの値を設定
+    if (index >= 0) {
+        const item = todoList[index];
+        if (req.body.done) {
+            item.done = req.body.done === "true";
+        }
+        console.log('Edit: ' + JSON.stringify(item));
+    }
+
+    // OKステータスを返す
+    res.sendStatus(200);
 });
 
 // 指定したポート番号でサーバー実行
